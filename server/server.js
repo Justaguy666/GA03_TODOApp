@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const taskRoutes = require("./routes/taskRoutes");
+const taskRoutes = require("./routes/tasks");
 
 app.set("view engine", "ejs");
 app.set("views", "./views");
