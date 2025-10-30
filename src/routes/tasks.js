@@ -3,18 +3,18 @@ const router = express.Router();
 const taskController = require('../controllers/taskController');
 
 // Display all tasks
-router.get('/tasks', taskController.getAllTasks);
+router.get('/', taskController.getAllTasks);
 
 // Add a new task
-router.post('/tasks', taskController.createTask);
+//router.post('/', taskController.addTask);
 
 // Mark a task as completed
-router.put('/tasks/:id/complete', taskController.completeTask);
+router.put('/:id/complete', taskController.markTask);
 
 // Unmark a task as not completed
-router.put('/tasks/:id/uncomplete', taskController.uncompleteTask);
+//router.put('/:id/uncomplete', taskController.unmarkTask);
 
 // Delete a task
-router.delete('/tasks/:id', taskController.deleteTask);
+//router.delete('/:id', taskController.deleteTask);
 
 module.exports = router;
