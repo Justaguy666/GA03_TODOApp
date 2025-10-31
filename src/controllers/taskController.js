@@ -10,5 +10,5 @@ exports.markTask = (req, res) => {
     if (!isNaN(id)) {
         taskStorage.mark(id);
     }
-    res.redirect('/tasks'); // Redirect back to the tasks page
+    res.redirect('/'); // Redirect back to the tasks page
 }

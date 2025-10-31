@@ -6,7 +6,7 @@ const taskController = require('../controllers/taskController');
 router.get('/', taskController.getAllTasks);
 
 // Add a new task
-//router.post('/', taskController.addTask);
+//router.post('/', taskController.createTask);
 
 // Mark a task as completed
 router.put('/:id/complete', taskController.markTask);

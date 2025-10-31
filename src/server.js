@@ -12,9 +12,7 @@ app.use(express.static("./public")); // serve static files from the "public" dir
 app.use(express.urlencoded({ extended: true })); // parse form POST data
 app.use(methodOverride("_method")); // support PUT and DELETE methods via query parameter
 
-app.use("/tasks", taskRoutes);
-
-app.get("/", (req, res) => res.redirect("/tasks"));
+app.use("/", taskRoutes);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`Server is running on http://localhost:${PORT}`));

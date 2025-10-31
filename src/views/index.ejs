@@ -3,12 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Todo App</title>
-    <link rel="stylesheet" href="/css/output.css">
+    <link rel="stylesheet" href="../../public/css/output.css">
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
     <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
         <h1 class="text-2xl font-bold mb-4 text-center">Todo App</h1>
+
+        <!-- Form to add new task -->
+        <form action="/" method="POST" class="flex mb-4">
+            <input type="text" name="description" placeholder="Add new task" class="flex-1 p-2 border rounded-l" required>
+            <button type="submit" class="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600">Add</button>
+        </form>
 
         <!-- task list -->
         <ul>
@@ -20,16 +26,16 @@
 
                     <div class="flex gap-1">
                         <% if(!task.completed){ %>
-                            <form action="/tasks/<%= task.id %>/complete?_method=PUT" method="POST">
+                            <form action="/<%= task.id %>/complete?_method=PUT" method="POST">
                                 <button class="bg-green-500 text-white px-2 rounded hover:bg-green-600">Mark</button>
                             </form>
                         <% } else { %>
-                            <form action="/tasks/<%= task.id %>/uncomplete?_method=PUT" method="POST">
+                            <form action="/<%= task.id %>/uncomplete?_method=PUT" method="POST">
                                 <button class="bg-yellow-500 text-white px-2 rounded hover:bg-yellow-600">Unmark</button>
                             </form>
                         <% } %>
 
-                        <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST">
+                        <form action="/<%= task.id %>?_method=DELETE" method="POST">
                             <button class="bg-red-500 text-white px-2 rounded hover:bg-red-600">Delete</button>
                         </form>
                     </div>
