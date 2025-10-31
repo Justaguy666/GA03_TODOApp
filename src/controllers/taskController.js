@@ -12,3 +12,11 @@ exports.markTask = (req, res) => {
     }
     res.redirect('/'); // Redirect back to the tasks page
 }
+
+exports.createTask = (req, res) => {
+    const taskDesc = req.body.description;
+    if (taskDesc && taskDesc.trim() !== '') {
+        taskStorage.add(taskDesc.trim());
+    }
+    res.redirect('/'); // Redirect back to the tasks page
+}

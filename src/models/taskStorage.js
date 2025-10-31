@@ -15,3 +15,8 @@ exports.mark = (id) => {
         task.completed = true;
     }
 }
+
+exports.add = (description) => {
+    const newId = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+    tasks.push({ id: newId, description, completed: false });
+}
