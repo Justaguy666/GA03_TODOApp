@@ -1,15 +1,16 @@
-const express = require('express');
+import express from 'express';
+import taskController from '../controllers/taskController.js';
+
 const router = express.Router();
-const taskController = require('../controllers/taskController');
 
 // Display all tasks
-router.get('/', taskController.getAllTasks);
+router.get('/', taskController.getTasks);
 
 // Add a new task
 //router.post('/', taskController.createTask);
 
 // Mark a task as completed
-router.put('/:id/complete', taskController.markTask);
+// router.put('/:id/complete', taskController.markTask);
 
 // Unmark a task as not completed
 //router.put('/:id/uncomplete', taskController.unmarkTask);
@@ -17,4 +18,4 @@ router.put('/:id/complete', taskController.markTask);
 // Delete a task
 //router.delete('/:id', taskController.deleteTask);
 
-module.exports = router;
+export default router;

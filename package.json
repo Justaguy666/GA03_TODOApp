@@ -2,6 +2,7 @@
   "name": "ga03_todoapp",
   "version": "1.0.0",
   "main": "postcss.config.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon src/server.js"
   },
