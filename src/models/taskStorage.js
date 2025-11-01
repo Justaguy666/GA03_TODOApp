@@ -6,17 +6,6 @@ let tasks = [
 ];
 
 // Get all tasks
-exports.getAll = () => tasks;
-
-// Mark a task as completed
-exports.mark = (id) => {
-    const task = tasks.find(t => t.id === Number(id));
-    if (task) {
-        task.completed = true;
-    }
-}
-
-exports.add = (description) => {
-    const newId = tasks.length ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
-    tasks.push({ id: newId, description, completed: false });
+export function getAll() {
+    return tasks;
 }

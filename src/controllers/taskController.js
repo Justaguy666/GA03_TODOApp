@@ -1,22 +1,18 @@
-const taskStorage = require('../models/taskStorage');
+import { getAll } from '../models/taskStorage.js'
 
-exports.getAllTasks = (req, res) => {
-    const tasks = taskStorage.getAll();
-    res.render('index', { tasks }); // Render the main page (index.ejs) with tasks
-}
-
-exports.markTask = (req, res) => {
-    const id = parseInt(req.params.id);
-    if (!isNaN(id)) {
-        taskStorage.mark(id);
+class TaskController {
+    getTasks = (req, res) => {
+        const tasks = getAll();
+        return res.status(200).json(tasks);
     }
-    res.redirect('/'); // Redirect back to the tasks page
+
+    // markTask = (req, res) => {
+    //     const id = parseInt(req.params.id);
+    //     if (!isNaN(id)) {
+    //         taskStorage.mark(id);
+    //     }
+    //     res.redirect('/'); 
+    // }
 }
 
-exports.createTask = (req, res) => {
-    const taskDesc = req.body.description;
-    if (taskDesc && taskDesc.trim() !== '') {
-        taskStorage.add(taskDesc.trim());
-    }
-    res.redirect('/'); // Redirect back to the tasks page
-}
+export default new TaskController();
