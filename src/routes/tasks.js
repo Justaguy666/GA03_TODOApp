@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', taskController.getTasks);
 
 // Add a new task
-//router.post('/', taskController.createTask);
+router.post('/', taskController.createTask);
 
 // Mark a task as completed
 // router.put('/:id/complete', taskController.markTask);
