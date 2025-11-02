@@ -17,8 +17,11 @@ app.set("views", path.join(__dirname, "views"));
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Middleware xử lý form và override method
-app.use(express.urlencoded({ extended: true }));
+// Middleware xử lý JSON và form data
+app.use(express.json()); // parse JSON body
+app.use(express.urlencoded({ extended: true })); // parse form data
+
+// Hỗ trợ method override (PUT, DELETE)
 app.use(methodOverride("_method"));
 
 // Routes
@@ -26,4 +29,6 @@ route(app);
 
 // Cổng server
 const PORT = 3000;
-app.listen(PORT, () => console.log(`Server is running at http://localhost:${PORT}`));
+app.listen(PORT, () =>
+  console.log(`Server is running at http://localhost:${PORT}`)
+);
