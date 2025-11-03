@@ -1,11 +1,15 @@
 import taskStorage from '../models/taskStorage.js'
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// tạo __dirname (nếu file controller là module ESM)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class TaskController {
-    // Render the main page (Pure View Engine - no SSR data)
     renderIndex = (req, res) => {
-        // Just render the view template, data will be loaded via client-side fetch
-        res.render('index');
-    }
+    res.sendFile(path.join(__dirname, '../index.html'));
+    };
 
     // API endpoint to get tasks as JSON (for Client-Side Rendering)
     getTasks = (req, res) => {

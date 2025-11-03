@@ -12,9 +12,104 @@ let tasks = [];
 // ========================
 // DOM Elements
 // ========================
-const todoList = document.getElementById('todoList');
-const completedList = document.getElementById('completedList');
-const addTaskBtn = document.getElementById('addTaskBtn');
+let todoList;
+let completedList;
+let addTaskBtn;
+
+// Component Rendering Functions
+function renderMainContent() {
+    return `
+        <main class="flex-1 w-full pt-36 pb-24 px-8">
+            <!-- Hero Section -->
+            <div class="text-center mb-16">
+                <h1 class="font-bold text-5xl leading-[71px] text-dark-text mb-6">
+                    Task Manager
+                </h1>
+                <p class="text-2xl leading-9 text-dark-text">
+                    Organize your tasks efficiently
+                </p>
+            </div>
+            
+            <!-- Container for Add Button and Task Columns -->
+            <div class="max-w-[1400px] mx-auto">
+                <!-- Add New Task Button -->
+                <div class="mb-8">
+                    <button id="addTaskBtn" class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-btn-primary to-btn-primary-dark border border-dark-border rounded-[20px] backdrop-blur-20 hover:opacity-90 transition-opacity">
+                        <!-- Add Icon -->
+                        <span class="material-icons text-dark-text">add</span>
+                        <span class="text-dark-text text-base font-normal">Add New Task</span>
+                    </button>
+                </div>
+            
+                <!-- Task Columns Container -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- To-Do Tasks Column -->
+                    <div class="relative bg-dark-card border border-dark-border rounded-[20px] backdrop-blur-20 h-[456px] overflow-hidden">
+                        <!-- Header -->
+                        <div class="relative h-14 flex items-center justify-center border-b-2 border-dark-border">
+                            <h2 class="font-space text-2xl text-dark-text">To-Do</h2>
+                        </div>
+                        
+                        <!-- Task List Container (Client-Side Rendered) -->
+                        <div id="todoList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
+                            <!-- Loading state -->
+                            <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                                <span class="animate-pulse">Loading tasks...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Footer Placeholder -->
+                        <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-dark-item border-t-2 border-dark-border"></div>
+                    </div>
+                    
+                    <!-- Completed Tasks Column -->
+                    <div class="relative bg-dark-card border border-dark-border rounded-[20px] backdrop-blur-20 h-[456px] overflow-hidden">
+                        <!-- Header -->
+                        <div class="relative h-14 flex items-center justify-center border-b-2 border-dark-border">
+                            <h2 class="font-space text-2xl text-dark-secondary">Completed</h2>
+                        </div>
+                        
+                        <!-- Task List Container (Client-Side Rendered) -->
+                        <div id="completedList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
+                            <!-- Loading state -->
+                            <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                                <span class="animate-pulse">Loading tasks...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Footer Placeholder -->
+                        <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-dark-item border-t-2 border-dark-border"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    `;
+}
+
+function renderHeader() {
+    return `
+        <header class="absolute top-8 left-8 right-8 h-20 bg-gradient-to-r from-[rgba(237,237,237,0.04)] to-[rgba(135,135,135,0.04)] backdrop-blur-20 rounded-xl">
+            <div class="flex items-center h-full px-8">
+                <!-- Logo -->
+                <div class="w-[50px] h-[50px] rounded-full bg-cover bg-center" style="background-image: url('/images/logo.png');">
+                    <img class="w-12 h-12 rounded-full" src="/images/logo.png" alt="logo">
+                </div>
+            </div>
+        </header>
+    `;
+}
+
+function renderFooter() {
+    return `
+        <footer class="w-full h-20 bg-gradient-to-r from-[rgba(237,237,237,0.04)] to-[rgba(135,135,135,0.04)] backdrop-blur-20 rounded-t-xl mt-auto">
+            <div class="flex items-center justify-center h-full">
+                <p class="font-space text-2xl text-dark-text text-center">
+                    Ⓒ 2025 SpicyBytes. All rights served.
+                </p>
+            </div>
+        </footer>
+    `;
+}
 
 // ========================
 // API Functions
@@ -185,6 +280,15 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
  * Render all tasks to DOM
  */
 function renderTasks() {
+    // Ensure we have the DOM elements
+    todoList = todoList || document.getElementById('todoList');
+    completedList = completedList || document.getElementById('completedList');
+    
+    if (!todoList || !completedList) {
+        console.error('Task list elements not found in DOM');
+        return;
+    }
+    
     // Filter tasks
     const todoTasks = tasks.filter(t => !t.completed);
     const completedTasks = tasks.filter(t => t.completed);
@@ -797,11 +901,71 @@ function showNotification(message, type = 'info') {
  * Initialize app on DOM ready
  */
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear any existing content
+    document.body.innerHTML = '';
+    
+    // Create container for app content
+    const appContainer = document.createElement('div');
+    appContainer.className = 'flex flex-col min-h-screen w-full bg-dark-bg font-space overflow-x-hidden';
+    document.body.appendChild(appContainer);
+    
+    // Insert header
+    const headerContainer = document.createElement('div');
+    headerContainer.innerHTML = renderHeader();
+    appContainer.appendChild(headerContainer.firstElementChild);
+    
+    // Insert main content
+    const mainContainer = document.createElement('div');
+    mainContainer.innerHTML = renderMainContent();
+    appContainer.appendChild(mainContainer.firstElementChild);
+    
+    // Insert footer
+    const footerContainer = document.createElement('div');
+    footerContainer.innerHTML = renderFooter();
+    appContainer.appendChild(footerContainer.firstElementChild);
+    
+    // Get DOM elements after they are created
+    todoList = document.getElementById('todoList');
+    completedList = document.getElementById('completedList');
+    addTaskBtn = document.getElementById('addTaskBtn');
+    
+    // Add custom scrollbar styles
+    const scrollbarStyle = document.createElement('style');
+    scrollbarStyle.textContent = `
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 23px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #EEEEEE;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #777777;
+            border-radius: 0;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button {
+            background: #555555;
+            height: 23px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button:vertical:decrement {
+            background: #555555 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23444444" d="M7 14l5-5 5 5z"/></svg>') center no-repeat;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button:vertical:increment {
+            background: #555555 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23444444" d="M7 10l5 5 5-5z"/></svg>') center no-repeat;
+        }
+    `;
+    document.head.appendChild(scrollbarStyle);
+    
     // Fetch initial tasks from server
     fetchTasks();
     
-    // Attach initial event listeners
-    attachTaskEventListeners();
+    // Re-attach event listeners since we recreated the button
+    addTaskBtn = document.getElementById('addTaskBtn');
+    addTaskBtn?.addEventListener('click', showAddTaskModal);
 });
 
 // ========================
