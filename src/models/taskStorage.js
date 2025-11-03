@@ -1,25 +1,25 @@
-// task structure: { id: number, description: string, completed: boolean }
+// task structure: { id: number, description: string, completed: boolean, priority: string, dueDate: string }
 let tasks = [
 { 
     id: 1, 
-    description: "Learn Node.js", 
+    description: "Finish Project Analysis", 
     completed: false, 
-    priority: "High", 
-    dueDate: "2025-11-10" 
+    priority: "high", 
+    dueDate: "01/11/2025" 
 },
 { 
     id: 2, 
-    description: "Build a Todo App", 
+    description: "Build Todo App UI", 
     completed: true, 
-    priority: "Medium", 
-    dueDate: "2025-11-05" 
+    priority: "medium", 
+    dueDate: "05/11/2025" 
 },
 { 
     id: 3, 
     description: "Master Express.js", 
     completed: false, 
-    priority: "Low", 
-    dueDate: "2025-11-20" 
+    priority: "low", 
+    dueDate: "20/11/2025" 
 }
 ];  
 
@@ -30,17 +30,34 @@ class TaskStorage {
         return tasks.find(task => task.id === id);
     }
 
-    addTasks = (task) => {
-        tasks.push(task);
+    add = ({ description, priority = 'medium', dueDate = '' }) => {
+        const newTask = {
+            id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+            description,
+            priority: priority.toLowerCase(),
+            dueDate,
+            completed: false
+        };
+        tasks.push(newTask);
+        return newTask;
     };
 
-    deleteTaskById = (id) => {
+    delete = (id) => {
         tasks = tasks.filter(task => task.id !== id);
+    }
+
+    mark = (id) => {
+        let task = this.getTaskById(id);
+        if (task) {
+            task.completed = true;
+        }
     }
 
     toggleTaskCompletion = (id) => {
         let task = this.getTaskById(id);
-        task.completed = !task.completed;
+        if (task) {
+            task.completed = !task.completed;
+        }
     }
 }
 

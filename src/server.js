@@ -14,8 +14,8 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// Static files
-app.use(express.static(path.join(__dirname, "public")));
+// Static files - public folder is at root level
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 // Middleware xử lý JSON và form data
 app.use(express.json()); // parse JSON body
