@@ -40,12 +40,12 @@ async function fetchTasks() {
  */
 async function addTask(taskData) {
     try {
-        const response = await fetch('/', {
+        const response = await fetch('/api/tasks', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Type': 'application/json',
             },
-            body: new URLSearchParams(taskData)
+            body: JSON.stringify(taskData)
         });
         
         if (response.ok) {
@@ -66,18 +66,17 @@ async function addTask(taskData) {
  */
 async function toggleTask(taskId) {
     try {
-        const response = await fetch(`/${taskId}/complete?_method=PUT`, {
-            method: 'POST',
+        const response = await fetch(`/api/tasks/${taskId}/toggle`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         
         if (response.ok) {
-            // Update local state
-            const task = tasks.find(t => t.id === taskId);
-            if (task) {
-                task.completed = !task.completed;
-                renderTasks();
-                showNotification('Task updated!', 'success');
-            }
+            // Refresh tasks after toggle
+            await fetchTasks();
+            showNotification('Task updated!', 'success');
         } else {
             throw new Error('Failed to update task');
         }
@@ -92,14 +91,16 @@ async function toggleTask(taskId) {
  */
 async function deleteTask(taskId) {
     try {
-        const response = await fetch(`/${taskId}?_method=DELETE`, {
-            method: 'POST',
+        const response = await fetch(`/api/tasks/${taskId}/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
         
         if (response.ok) {
-            // Remove from local state
-            tasks = tasks.filter(t => t.id !== taskId);
-            renderTasks();
+            // Refresh tasks after delete
+            await fetchTasks();
             showNotification('Task deleted!', 'success');
         } else {
             throw new Error('Failed to delete task');
@@ -132,11 +133,11 @@ function getPriorityClass(priority) {
 function createTaskHTML(task, priorityClass = 'bg-dark-item') {
     return `
         <div class="relative h-[100px] border-b border-black/20 ${priorityClass} hover:opacity-90 transition-opacity" data-task-id="${task.id}">
-            <div class="flex items-center justify-between h-full px-8">
+            <div class="flex items-center justify-between h-full px-8 gap-4">
                 
                 <!-- Checkbox -->
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 bg-white rounded flex items-center justify-center cursor-pointer hover:scale-110 transition-transform task-checkbox">
+                <div class="flex items-center gap-4 flex-1 min-w-0">
+                    <div class="w-10 h-10 bg-white rounded flex items-center justify-center cursor-pointer hover:scale-110 transition-transform task-checkbox flex-shrink-0">
                         ${task.completed ? `
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#000000"/>
@@ -145,12 +146,12 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                     </div>
                     
                     <!-- Task Info -->
-                    <div class="flex flex-col">
-                        <span class="font-space text-2xl text-white ${task.completed ? 'opacity-50' : ''}" style="text-decoration: underline; text-decoration-color: white;">
+                    <div class="flex flex-col min-w-0 flex-1">
+                        <span class="font-space text-2xl text-white ${task.completed ? 'opacity-50' : ''} truncate" style="text-decoration: underline; text-decoration-color: white;">
                             ${escapeHtml(task.description || task.title || 'Untitled Task')}
                         </span>
                         ${task.dueDate ? `
-                            <span class="font-space text-sm text-white/60 mt-1">
+                            <span class="font-space text-sm text-white/60 mt-1 truncate">
                                 Due: ${escapeHtml(task.dueDate)}
                             </span>
                         ` : ''}
@@ -158,7 +159,7 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                 </div>
                 
                 <!-- Action Buttons -->
-                <div class="flex gap-2">
+                <div class="flex gap-2 flex-shrink-0">
                     <!-- Edit Button -->
                     <button class="w-[50px] h-[50px] bg-btn-edit rounded hover:bg-btn-edit/80 transition-colors flex items-center justify-center group task-edit">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2">
@@ -274,64 +275,97 @@ addTaskBtn?.addEventListener('click', () => {
  * Show Add Task Modal
  */
 function showAddTaskModal() {
-    // Create modal HTML
+    // Create modal HTML with new design
     const modalHTML = `
-        <div id="taskModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
-            <div class="bg-dark-card border border-dark-border rounded-[20px] p-8 w-full max-w-md shadow-2xl animate-slideUp">
-                <h2 class="font-space text-3xl text-dark-text mb-6">Add New Task</h2>
+        <div id="taskModal" class="fixed inset-0 bg-black/60 backdrop-blur-[10px] flex items-center justify-center z-50 animate-fadeIn">
+            <div class="relative bg-[#3A3A3A] border border-[#444444] rounded-[20px] w-[660px] shadow-2xl animate-slideUp">
                 
-                <form id="addTaskForm" class="space-y-4">
-                    <!-- Description -->
+                <!-- Header -->
+                <div class="relative h-[69px] flex items-center justify-center border-b border-[#444444]">
+                    <h2 class="font-space text-2xl text-[#EDEDED] text-center">Add New Task</h2>
+                    
+                    <!-- Close Button -->
+                    <button 
+                        id="closeModalBtn"
+                        class="absolute right-4 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center hover:bg-white/10 rounded transition-colors"
+                    >
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            <path d="M18 6L6 18M6 6l12 12" stroke="#999999" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Form Content -->
+                <form id="addTaskForm" class="px-6 py-6 space-y-6">
+                    
+                    <!-- Task Name -->
                     <div>
-                        <label class="block font-space text-sm text-dark-text mb-2">Task Description</label>
+                        <label class="block font-space text-base text-[#EDEDED] mb-2">Task Name</label>
                         <input 
                             type="text" 
                             name="description" 
                             required
-                            placeholder="Enter task description..."
-                            class="w-full px-4 py-3 bg-dark-item border border-dark-border rounded-lg text-dark-text font-space focus:outline-none focus:border-btn-primary transition-colors"
+                            placeholder="Enter task name..."
+                            class="w-full h-[47px] px-4 bg-[#2A2A2A] border border-[#444444] rounded-lg text-[#EDEDED] text-sm font-space placeholder-[#EDEDED]/50 focus:outline-none focus:border-btn-primary transition-colors"
                         />
+                    </div>
+                    
+                    <!-- Description -->
+                    <div>
+                        <label class="block font-space text-base text-[#EDEDED] mb-2">Description</label>
+                        <textarea 
+                            name="description_detail"
+                            rows="4"
+                            placeholder="Enter description..."
+                            class="w-full h-[110px] px-4 py-3 bg-[#2A2A2A] border border-[#444444] rounded-lg text-[#EDEDED] text-sm font-space placeholder-[#EDEDED]/50 focus:outline-none focus:border-btn-primary transition-colors resize-none"
+                        ></textarea>
                     </div>
                     
                     <!-- Priority -->
                     <div>
-                        <label class="block font-space text-sm text-dark-text mb-2">Priority</label>
-                        <select 
-                            name="priority"
-                            class="w-full px-4 py-3 bg-dark-item border border-dark-border rounded-lg text-dark-text font-space focus:outline-none focus:border-btn-primary transition-colors"
-                        >
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                        </select>
+                        <label class="block font-space text-base text-[#EDEDED] mb-2">Priority</label>
+                        <div class="relative">
+                            <select 
+                                name="priority"
+                                class="w-full h-[49px] px-4 bg-[#2A2A2A] border border-[#444444] rounded-lg text-[#EDEDED] text-sm font-space focus:outline-none focus:border-btn-primary transition-colors appearance-none cursor-pointer"
+                            >
+                                <option value="low">Low Priority</option>
+                                <option value="medium" selected>Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                            <!-- Dropdown Arrow -->
+                            <svg class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" viewBox="0 0 16 16" fill="none">
+                                <path d="M4 6L8 10L12 6" stroke="#EDEDED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                     </div>
                     
                     <!-- Due Date -->
                     <div>
-                        <label class="block font-space text-sm text-dark-text mb-2">Due Date</label>
+                        <label class="block font-space text-base text-[#EDEDED] mb-2">Due Date</label>
+                        <style>
+                            input[type="date"]::-webkit-calendar-picker-indicator {
+                                display: none;
+                            }
+                        </style>
                         <input 
                             type="date" 
                             name="dueDate"
-                            class="w-full px-4 py-3 bg-dark-item border border-dark-border rounded-lg text-dark-text font-space focus:outline-none focus:border-btn-primary transition-colors"
+                            placeholder="MM/DD/YYYY"
+                            class="w-full h-[47px] px-4 bg-[#2A2A2A] border border-[#444444] rounded-lg text-[#EDEDED] text-sm font-space placeholder-[#EDEDED]/50 focus:outline-none focus:border-btn-primary transition-colors"
                         />
                     </div>
                     
-                    <!-- Buttons -->
-                    <div class="flex gap-4 mt-6">
+                    <!-- Submit Button -->
+                    <div class="pt-4">
                         <button 
                             type="submit"
-                            class="flex-1 px-6 py-3 bg-gradient-to-r from-btn-primary to-btn-primary-dark text-dark-text font-space rounded-lg hover:opacity-90 transition-opacity"
+                            class="w-full h-[47px] bg-[#4A4A4A] border border-[#555555] rounded-lg text-[#EDEDED] text-sm font-space text-center hover:opacity-80 transition-opacity disabled:opacity-50"
                         >
                             Add Task
                         </button>
-                        <button 
-                            type="button"
-                            id="cancelBtn"
-                            class="flex-1 px-6 py-3 bg-dark-item text-dark-secondary font-space rounded-lg hover:bg-dark-border transition-colors"
-                        >
-                            Cancel
-                        </button>
                     </div>
+                    
                 </form>
             </div>
         </div>
@@ -343,7 +377,7 @@ function showAddTaskModal() {
     // Attach event listeners
     const modal = document.getElementById('taskModal');
     const form = document.getElementById('addTaskForm');
-    const cancelBtn = document.getElementById('cancelBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
     
     // Submit form
     form.addEventListener('submit', async (e) => {
@@ -351,12 +385,25 @@ function showAddTaskModal() {
         const formData = new FormData(form);
         const taskData = Object.fromEntries(formData);
         
+        // Convert date format from yyyy-mm-dd to dd/mm/yyyy
+        if (taskData.dueDate) {
+            const [year, month, day] = taskData.dueDate.split('-');
+            taskData.dueDate = `${day}/${month}/${year}`;
+        } else {
+            // Set default to current date if empty
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            taskData.dueDate = `${day}/${month}/${year}`;
+        }
+        
         await addTask(taskData);
         modal.remove();
     });
     
-    // Cancel button
-    cancelBtn.addEventListener('click', () => {
+    // Close button
+    closeBtn.addEventListener('click', () => {
         modal.remove();
     });
     
@@ -367,8 +414,19 @@ function showAddTaskModal() {
         }
     });
     
+    // ESC key to close
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            modal.remove();
+            document.removeEventListener('keydown', handleEscape);
+        }
+    };
+    document.addEventListener('keydown', handleEscape);
+    
     // Focus first input
-    form.querySelector('input[name="description"]').focus();
+    setTimeout(() => {
+        form.querySelector('input[name="description"]').focus();
+    }, 100);
 }
 
 /**

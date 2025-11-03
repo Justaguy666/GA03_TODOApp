@@ -12,7 +12,7 @@ class APIController {
             return res.status(409).json({ message: "Task with this ID already exists" });
         }
         
-        taskStorage.addTasks(newTask);
+        taskStorage.add(newTask);
 
         return res.status(200).json({ message: "The task was added"});
     }
@@ -22,7 +22,7 @@ class APIController {
             return res.status(404).json({ message: "Task not found" });
         }
 
-        taskStorage.deleteTaskById(parseInt(req.params.id));
+        taskStorage.delete(parseInt(req.params.id));
 
         return res.status(200).json({ message: "The task was deleted" });
     }

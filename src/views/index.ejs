@@ -50,27 +50,12 @@
                     <h2 class="font-space text-2xl text-dark-text">To-Do</h2>
                 </div>
                 
-                <!-- Task List Container -->
+                <!-- Task List Container (Client-Side Rendered) -->
                 <div id="todoList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
-                    <!-- Render To-Do Tasks -->
-                    <% 
-                    const todoTasks = tasks.filter(t => !t.completed);
-                    if (todoTasks.length > 0) {
-                        todoTasks.forEach((task, index) => {
-                            let priorityClass = 'bg-dark-item';
-                            if (task.priority === 'high') priorityClass = 'bg-priority-high';
-                            else if (task.priority === 'medium') priorityClass = 'bg-priority-medium';
-                            else if (task.priority === 'low') priorityClass = 'bg-priority-low';
-                    %>
-                        <%- include('partials/taskItem', { task, priorityClass }) %>
-                    <% 
-                        });
-                    } else { 
-                    %>
-                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
-                            No tasks yet. Add one to get started!
-                        </div>
-                    <% } %>
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                        <span class="animate-pulse">Loading tasks...</span>
+                    </div>
                 </div>
                 
                 <!-- Footer Placeholder -->
@@ -84,23 +69,12 @@
                     <h2 class="font-space text-2xl text-dark-secondary">Completed</h2>
                 </div>
                 
-                <!-- Task List Container -->
+                <!-- Task List Container (Client-Side Rendered) -->
                 <div id="completedList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
-                    <!-- Render Completed Tasks -->
-                    <% 
-                    const completedTasks = tasks.filter(t => t.completed);
-                    if (completedTasks.length > 0) {
-                        completedTasks.forEach((task) => {
-                    %>
-                        <%- include('partials/taskItem', { task, priorityClass: 'bg-dark-item' }) %>
-                    <% 
-                        });
-                    } else { 
-                    %>
-                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
-                            No completed tasks
-                        </div>
-                    <% } %>
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                        <span class="animate-pulse">Loading tasks...</span>
+                    </div>
                 </div>
                 
                 <!-- Footer Placeholder -->

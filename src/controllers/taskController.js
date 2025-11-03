@@ -1,10 +1,10 @@
 import taskStorage from '../models/taskStorage.js'
 
 class TaskController {
-    // Render the main page with tasks (Server-Side Rendering)
+    // Render the main page (Pure View Engine - no SSR data)
     renderIndex = (req, res) => {
-        const tasks = taskStorage.getTasks();
-        res.render('index', { tasks });
+        // Just render the view template, data will be loaded via client-side fetch
+        res.render('index');
     }
 
     // API endpoint to get tasks as JSON (for Client-Side Rendering)
@@ -13,31 +13,34 @@ class TaskController {
         return res.status(200).json(tasks);
     }
 
-    // Add new task
+    // Add new task (API endpoint for AJAX)
     addTask = (req, res) => {
         const { description, priority, dueDate } = req.body;
         if (description) {
-            taskStorage.add({ description, priority, dueDate });
+            const newTask = taskStorage.add({ description, priority, dueDate });
+            return res.status(201).json(newTask);
         }
-        res.redirect('/');
+        return res.status(400).json({ error: 'Description is required' });
     }
 
-    // Mark task as completed
+    // Mark task as completed (API endpoint for AJAX)
     markTask = (req, res) => {
         const id = parseInt(req.params.id);
         if (!isNaN(id)) {
             taskStorage.mark(id);
+            return res.status(200).json({ success: true });
         }
-        res.redirect('/');
+        return res.status(400).json({ error: 'Invalid task ID' });
     }
 
-    // Delete task
+    // Delete task (API endpoint for AJAX)
     deleteTask = (req, res) => {
         const id = parseInt(req.params.id);
         if (!isNaN(id)) {
             taskStorage.delete(id);
+            return res.status(200).json({ success: true });
         }
-        res.redirect('/');
+        return res.status(400).json({ error: 'Invalid task ID' });
     }
 }
 
