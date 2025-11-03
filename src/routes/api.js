@@ -18,5 +18,4 @@ router.patch('/tasks/:id/edit', APIController.updateTask);
 // [PATH] /api/tasks/:id/toggle
 router.patch('/tasks/:id/toggle', APIController.toggleTaskCompletion);
 
-
 export default router;

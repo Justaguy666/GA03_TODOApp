@@ -29,17 +29,19 @@
             </p>
         </div>
         
-        <!-- Add New Task Button -->
-        <div class="mb-8">
-            <button id="addTaskBtn" class="p flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-btn-primary to-btn-primary-dark border border-dark-border rounded-[20px] backdrop-blur-20 hover:opacity-90 transition-opacity">
-                <!-- Add Icon -->
-                <span class="material-icons text-dark-text">add</span>
-                <span class="text-dark-text text-base font-normal">Add New Task</span>
-            </button>
-        </div>
+        <!-- Container for Add Button and Task Columns -->
+        <div class="max-w-[1400px] mx-auto">
+            <!-- Add New Task Button -->
+            <div class="mb-8">
+                <button id="addTaskBtn" class="flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-btn-primary to-btn-primary-dark border border-dark-border rounded-[20px] backdrop-blur-20 hover:opacity-90 transition-opacity">
+                    <!-- Add Icon -->
+                    <span class="material-icons text-dark-text">add</span>
+                    <span class="text-dark-text text-base font-normal">Add New Task</span>
+                </button>
+            </div>
         
-        <!-- Task Columns Container -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto">
+            <!-- Task Columns Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- To-Do Tasks Column -->
             <div class="relative bg-dark-card border border-dark-border rounded-[20px] backdrop-blur-20 h-[456px] overflow-hidden">
@@ -48,27 +50,12 @@
                     <h2 class="font-space text-2xl text-dark-text">To-Do</h2>
                 </div>
                 
-                <!-- Task List Container -->
+                <!-- Task List Container (Client-Side Rendered) -->
                 <div id="todoList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
-                    <!-- Render To-Do Tasks -->
-                    <% 
-                    const todoTasks = tasks.filter(t => !t.completed);
-                    if (todoTasks.length > 0) {
-                        todoTasks.forEach((task, index) => {
-                            let priorityClass = 'bg-dark-item';
-                            if (task.priority === 'high') priorityClass = 'bg-priority-high';
-                            else if (task.priority === 'medium') priorityClass = 'bg-priority-medium';
-                            else if (task.priority === 'low') priorityClass = 'bg-priority-low';
-                    %>
-                        <%- include('partials/taskItem', { task, priorityClass }) %>
-                    <% 
-                        });
-                    } else { 
-                    %>
-                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
-                            No tasks yet. Add one to get started!
-                        </div>
-                    <% } %>
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                        <span class="animate-pulse">Loading tasks...</span>
+                    </div>
                 </div>
                 
                 <!-- Footer Placeholder -->
@@ -82,30 +69,19 @@
                     <h2 class="font-space text-2xl text-dark-secondary">Completed</h2>
                 </div>
                 
-                <!-- Task List Container -->
+                <!-- Task List Container (Client-Side Rendered) -->
                 <div id="completedList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
-                    <!-- Render Completed Tasks -->
-                    <% 
-                    const completedTasks = tasks.filter(t => t.completed);
-                    if (completedTasks.length > 0) {
-                        completedTasks.forEach((task) => {
-                    %>
-                        <%- include('partials/taskItem', { task, priorityClass: 'bg-dark-item' }) %>
-                    <% 
-                        });
-                    } else { 
-                    %>
-                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
-                            No completed tasks
-                        </div>
-                    <% } %>
+                    <!-- Loading state -->
+                    <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                        <span class="animate-pulse">Loading tasks...</span>
+                    </div>
                 </div>
                 
                 <!-- Footer Placeholder -->
-                <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-priority-low border-t-2 border-dark-border"></div>
+                <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-dark-item border-t-2 border-dark-border"></div>
             </div>
             
-        </div>
+        </div><!-- End Container for Add Button and Task Columns -->
         
     </main>
     

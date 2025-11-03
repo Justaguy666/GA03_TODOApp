@@ -16,7 +16,7 @@
       
       <!-- Task Info -->
       <div class="flex flex-col">
-        <span class="font-space text-2xl text-white <%= task.completed ? 'underline opacity-50' : '' %> text-center">
+        <span class="font-space text-2xl max-sm:text-sm text-white <%= task.completed ? 'opacity-50' : '' %>" style="text-decoration-color: white;">
           <%= task.description || task.title %>
         </span>
         <% if (task.dueDate) { %>
