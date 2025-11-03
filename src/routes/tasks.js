@@ -3,7 +3,7 @@ import taskController from '../controllers/taskController.js';
 
 const router = express.Router();
 
-// Display all tasks
+// [GET] /
 router.get('/', taskController.getTasks);
 
 // Add a new task

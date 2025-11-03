@@ -1,10 +1,11 @@
-import { getAll } from '../models/taskStorage.js'
+import taskStorage from '../models/taskStorage.js'
 
 class TaskController {
     getTasks = (req, res) => {
-        const tasks = getAll();
+        const tasks = taskStorage.getTasks();
         return res.status(200).json(tasks);
     }
+
 
     // markTask = (req, res) => {
     //     const id = parseInt(req.params.id);
