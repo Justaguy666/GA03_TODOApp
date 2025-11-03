@@ -1,4 +1,4 @@
-// task structure: { id: number, description: string, completed: boolean, priority: string, dueDate: string, description_detail: string }
+// task structure: { id: number, description: string, completed: boolean, priority: string, dueDate: string }
 let tasks = [
 { 
     id: 1, 
