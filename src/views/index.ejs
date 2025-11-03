@@ -2,48 +2,147 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Todo App</title>
-    <link rel="stylesheet" href="../../public/css/output.css">
-    <script defer>
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+    <link rel="stylesheet" href="/css/output.css">
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
-
-    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-4 text-center">Todo App</h1>
-
-        <!-- Form to add new task -->
-        <form action="/" method="POST" class="flex mb-4">
-            <input type="text" name="description" placeholder="Add new task" class="flex-1 p-2 border rounded-l" required>
-            <button type="submit" class="bg-blue-500 text-white px-4 rounded-r hover:bg-blue-600">Add</button>
-        </form>
-
-        <!-- task list -->
-        <ul>
-            <% tasks.forEach(task => { %>
-                <li class="flex justify-between items-center mb-2 p-2 border rounded 
-                    <%= task.completed ? 'bg-green-100 line-through' : 'bg-gray-50' %>">
-                    
-                    <span><%= task.description %></span>
-
-                    <div class="flex gap-1">
-                        <% if(!task.completed){ %>
-                            <form action="/<%= task.id %>/complete?_method=PUT" method="POST">
-                                <button class="bg-green-500 text-white px-2 rounded hover:bg-green-600">Mark</button>
-                            </form>
-                        <% } else { %>
-                            <form action="/<%= task.id %>/uncomplete?_method=PUT" method="POST">
-                                <button class="bg-yellow-500 text-white px-2 rounded hover:bg-yellow-600">Unmark</button>
-                            </form>
-                        <% } %>
-
-                        <form action="/<%= task.id %>?_method=DELETE" method="POST">
-                            <button class="bg-red-500 text-white px-2 rounded hover:bg-red-600">Delete</button>
-                        </form>
-                    </div>
-                </li>
-            <% }) %>
-        </ul>
-    </div>
+<body class="relative w-full min-h-screen bg-dark-bg font-space overflow-x-hidden">
+    
+    <!-- Include Header -->
+    <%- include('partials/header') %>
+    
+    <!-- Main Content Container -->
+    <main class="relative w-full h-screen pt-36 pb-24 px-8">
+        
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="font-bold text-5xl leading-[71px] text-dark-text mb-6">
+                Task Manager
+            </h1>
+            <p class="text-2xl leading-9 text-dark-text">
+                Organize your tasks efficiently
+            </p>
+        </div>
+        
+        <!-- Add New Task Button -->
+        <div class="mb-8">
+            <button id="addTaskBtn" class="p flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-btn-primary to-btn-primary-dark border border-dark-border rounded-[20px] backdrop-blur-20 hover:opacity-90 transition-opacity">
+                <!-- Add Icon -->
+                <span class="material-icons text-dark-text">add</span>
+                <span class="text-dark-text text-base font-normal">Add New Task</span>
+            </button>
+        </div>
+        
+        <!-- Task Columns Container -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[1400px] mx-auto">
+            
+            <!-- To-Do Tasks Column -->
+            <div class="relative bg-dark-card border border-dark-border rounded-[20px] backdrop-blur-20 h-[456px] overflow-hidden">
+                <!-- Header -->
+                <div class="relative h-14 flex items-center justify-center border-b-2 border-dark-border">
+                    <h2 class="font-space text-2xl text-dark-text">To-Do</h2>
+                </div>
+                
+                <!-- Task List Container -->
+                <div id="todoList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
+                    <!-- Render To-Do Tasks -->
+                    <% 
+                    const todoTasks = tasks.filter(t => !t.completed);
+                    if (todoTasks.length > 0) {
+                        todoTasks.forEach((task, index) => {
+                            let priorityClass = 'bg-dark-item';
+                            if (task.priority === 'high') priorityClass = 'bg-priority-high';
+                            else if (task.priority === 'medium') priorityClass = 'bg-priority-medium';
+                            else if (task.priority === 'low') priorityClass = 'bg-priority-low';
+                    %>
+                        <%- include('partials/taskItem', { task, priorityClass }) %>
+                    <% 
+                        });
+                    } else { 
+                    %>
+                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                            No tasks yet. Add one to get started!
+                        </div>
+                    <% } %>
+                </div>
+                
+                <!-- Footer Placeholder -->
+                <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-dark-item border-t-2 border-dark-border"></div>
+            </div>
+            
+            <!-- Completed Tasks Column -->
+            <div class="relative bg-dark-card border border-dark-border rounded-[20px] backdrop-blur-20 h-[456px] overflow-hidden">
+                <!-- Header -->
+                <div class="relative h-14 flex items-center justify-center border-b-2 border-dark-border">
+                    <h2 class="font-space text-2xl text-dark-secondary">Completed</h2>
+                </div>
+                
+                <!-- Task List Container -->
+                <div id="completedList" class="relative h-[350px] overflow-y-auto custom-scrollbar">
+                    <!-- Render Completed Tasks -->
+                    <% 
+                    const completedTasks = tasks.filter(t => t.completed);
+                    if (completedTasks.length > 0) {
+                        completedTasks.forEach((task) => {
+                    %>
+                        <%- include('partials/taskItem', { task, priorityClass: 'bg-dark-item' }) %>
+                    <% 
+                        });
+                    } else { 
+                    %>
+                        <div class="flex items-center justify-center h-full text-dark-secondary text-xl">
+                            No completed tasks
+                        </div>
+                    <% } %>
+                </div>
+                
+                <!-- Footer Placeholder -->
+                <div class="absolute bottom-0 left-0 right-0 h-[50px] bg-priority-low border-t-2 border-dark-border"></div>
+            </div>
+            
+        </div>
+        
+    </main>
+    
+    <!-- Include Footer -->
+    <%- include('partials/footer') %>
+    
+    <!-- Client-side JavaScript -->
+    <script src="/js/app.js"></script>
+    
+    <style>
+        /* Custom Scrollbar Styling */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 23px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #EEEEEE;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #777777;
+            border-radius: 0;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button {
+            background: #555555;
+            height: 23px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button:vertical:decrement {
+            background: #555555 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23444444" d="M7 14l5-5 5 5z"/></svg>') center no-repeat;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-button:vertical:increment {
+            background: #555555 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23444444" d="M7 10l5 5 5-5z"/></svg>') center no-repeat;
+        }
+    </style>
+    
 </body>
 </html>
