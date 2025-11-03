@@ -4,6 +4,7 @@
   "main": "postcss.config.js",
   "type": "module",
   "scripts": {
+    "build-css": "npx tailwindcss -i ./public/input.css -o ./public/styles/output.css --minify",
     "dev": "nodemon src/server.js"
   },
   "keywords": [],
