@@ -1,4 +1,4 @@
-// task structure: { id: number, description: string, completed: boolean, priority: string, dueDate: string }
+// task structure: { id: number, description: string, completed: boolean, priority: string, dueDate: string, description_detail: string }
 let tasks = [
 { 
     id: 1, 
@@ -31,8 +31,19 @@ class TaskStorage {
     }
 
     add = ({ description, priority = 'medium', dueDate = '' }) => {
+        // Find the smallest missing ID
+        let newId = 1;
+        const existingIds = tasks.map(task => task.id).sort((a, b) => a - b);
+        
+        for (let i = 0; i < existingIds.length; i++) {
+            if (existingIds[i] !== newId) {
+                break;
+            }
+            newId++;
+        }
+        
         const newTask = {
-            id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+            id: newId,
             description,
             priority: priority.toLowerCase(),
             dueDate,
@@ -44,6 +55,18 @@ class TaskStorage {
 
     delete = (id) => {
         tasks = tasks.filter(task => task.id !== id);
+    }
+
+    update = (id, updates) => {
+        let task = this.getTaskById(id);
+        if (task) {
+            // Only update allowed fields
+            if (updates.description !== undefined) task.description = updates.description;
+            if (updates.priority !== undefined) task.priority = updates.priority.toLowerCase();
+            if (updates.dueDate !== undefined) task.dueDate = updates.dueDate;
+            return task;
+        }
+        return null;
     }
 
     mark = (id) => {
