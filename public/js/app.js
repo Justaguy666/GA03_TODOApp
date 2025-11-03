@@ -132,11 +132,11 @@ function getPriorityClass(priority) {
 function createTaskHTML(task, priorityClass = 'bg-dark-item') {
     return `
         <div class="relative h-[100px] border-b border-black/20 ${priorityClass} hover:opacity-90 transition-opacity" data-task-id="${task.id}">
-            <div class="flex items-center justify-between h-full px-8">
+            <div class="flex items-center justify-between h-full px-8 max-sm:px-4">
                 
                 <!-- Checkbox -->
                 <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 max-sm:w-[5px] max-sm:h-[5px] bg-white rounded flex items-center justify-center cursor-pointer hover:scale-110 transition-transform task-checkbox">
+                    <div class="w-10 h-10 max-sm:w-5 max-sm:h-5 bg-white rounded flex items-center justify-center cursor-pointer hover:scale-110 transition-transform task-checkbox">
                         ${task.completed ? `
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#000000"/>
@@ -146,7 +146,7 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                     
                     <!-- Task Info -->
                     <div class="flex flex-col">
-                        <span class="font-space text-2xl max-sm:text-lg text-white ${task.completed ? 'underline opacity-50' : ''} text-center">
+                        <span class="font-space text-2xl max-sm:text-sm text-white ${task.completed ? 'underline opacity-50' : ''} text-center">
                             ${escapeHtml(task.description || task.title || 'Untitled Task')}
                         </span>
                         ${task.dueDate ? `
@@ -161,7 +161,7 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                 <div class="flex gap-2">
                     <!-- Edit Button -->
                     <button class="w-[50px] h-[50px] max-sm:w-[30px] max-sm:h-[30px] bg-btn-edit rounded hover:bg-btn-edit/80 transition-colors flex items-center justify-center group task-edit">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2">
+                        <svg class="w-6 h-6 max-sm:w-3 max-sm:h-3" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="2">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                         </svg>
@@ -169,7 +169,7 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                     
                     <!-- Delete Button -->
                     <button class="w-[50px] h-[50px] max-sm:w-[30px] max-sm:h-[30px] bg-btn-delete rounded hover:bg-btn-delete/80 transition-colors flex items-center justify-center group task-delete">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="white">
+                        <svg class="w-6 h-6 max-sm:w-3 max-sm:h-3" viewBox="0 0 24 24" fill="white">
                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
                         </svg>
                     </button>
