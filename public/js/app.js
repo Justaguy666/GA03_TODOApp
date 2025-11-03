@@ -146,7 +146,7 @@ function createTaskHTML(task, priorityClass = 'bg-dark-item') {
                     
                     <!-- Task Info -->
                     <div class="flex flex-col">
-                        <span class="font-space text-2xl text-white ${task.completed ? 'underline opacity-50' : ''} text-center">
+                        <span class="font-space text-2xl text-white ${task.completed ? 'opacity-50' : ''}" style="text-decoration: underline; text-decoration-color: white;">
                             ${escapeHtml(task.description || task.title || 'Untitled Task')}
                         </span>
                         ${task.dueDate ? `
